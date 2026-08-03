@@ -2,6 +2,7 @@
 
 * 在列表栏新增了Texture2D的信息，可以更加方便的查看贴图是否符合要求
 * 增加程序参数，可以在assetbundle文件上右键，选择打开方式，选择AssetStudio，此后可以直接双击以AssetStudio打开这种后缀的文件
+* 支持读取 typetree 被剥离的 bundle：通过外部 TypeTree 数据源（插件）恢复
 
 ----
 

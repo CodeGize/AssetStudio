@@ -110,6 +110,17 @@ namespace AssetStudioGUI
             Progress.Default = new Progress<int>(SetProgressBarValue);
             Studio.StatusStripUpdate = StatusStripUpdate;
 
+            // 运行时扫描并加载 TypeTree 数据源插件(GUI 不编译期依赖任何具体插件)
+            try
+            {
+                var pluginDir = Path.Combine(Application.StartupPath, "Plugins");
+                TypeTreeProviderLoader.LoadFromDirectory(pluginDir);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning($"Failed to load typetree plugins: {ex.Message}");
+            }
+
             if (args != null && args.Length > 0)
             {
                 LoadFile(args[0]);
@@ -150,6 +161,54 @@ namespace AssetStudioGUI
                 }
                 BuildAssetStructures();
             }
+        }
+
+        private void loadTypeTreeMenuItem_Click(object sender, EventArgs e)
+        {
+            if (TypeTreeProviderLoader.ProviderCount == 0)
+            {
+                StatusStripUpdate("No typetree plugin found. Put a typetree plugin (e.g. AssetStudio.UnionTypeTree.dll) into the Plugins folder.");
+                return;
+            }
+            using (var openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "Select typetree data source";
+                openFileDialog.Filter = "UnionTypeTree files (*.uniontypetree;*.utt)|*.uniontypetree;*.utt|All files (*.*)|*.*";
+                openFileDialog.InitialDirectory = openDirectoryBackup;
+                if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    try
+                    {
+                        var provider = TypeTreeProviderLoader.Open(openFileDialog.FileName);
+                        if (provider == null)
+                        {
+                            StatusStripUpdate("No typetree plugin could open this file.");
+                            return;
+                        }
+                        // 替换旧的数据源
+                        if (assetsManager.TypeTreeProvider is IDisposable old)
+                        {
+                            old.Dispose();
+                        }
+                        assetsManager.TypeTreeProvider = provider;
+                        StatusStripUpdate($"Loaded typetree source: {Path.GetFileName(openFileDialog.FileName)} ({provider.TypeCount} types). Reload assets to apply.");
+                    }
+                    catch (Exception ex)
+                    {
+                        StatusStripUpdate($"Failed to load typetree source: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+        private void unloadTypeTreeMenuItem_Click(object sender, EventArgs e)
+        {
+            if (assetsManager.TypeTreeProvider is IDisposable old)
+            {
+                old.Dispose();
+            }
+            assetsManager.TypeTreeProvider = null;
+            StatusStripUpdate("Typetree source unloaded.");
         }
 
         private async void loadFile_Click(object sender, EventArgs e)

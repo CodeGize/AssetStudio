@@ -284,6 +284,31 @@ namespace AssetStudio
                     }
                 }
             }
+            else
+            {
+                // typetree 被剥离。部分项目(自定义剥离)只删除 typetree blob,但仍保留
+                // type dependencies 数据,需要消费掉以保证流位置正确;随后尝试从外部
+                // TypeTree 数据源(ITypeTreeProvider)恢复被剥离的 TypeTree。
+                var provider = assetsManager.TypeTreeProvider;
+                if (provider != null && provider.IsLoaded)
+                {
+                    if (header.m_Version >= SerializedFileFormatVersion.StoresTypeDependencies)
+                    {
+                        if (isRefType)
+                        {
+                            type.m_KlassName = reader.ReadStringToNull();
+                            type.m_NameSpace = reader.ReadStringToNull();
+                            type.m_AsmName = reader.ReadStringToNull();
+                        }
+                        else
+                        {
+                            type.m_TypeDependencies = reader.ReadInt32Array();
+                        }
+                    }
+
+                    type.m_Type = provider.FindTypeTree(type);
+                }
+            }
 
             return type;
         }

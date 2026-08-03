@@ -11,6 +11,7 @@ namespace AssetStudio
     public class AssetsManager
     {
         public string SpecifyUnityVersion;
+        public ITypeTreeProvider TypeTreeProvider { get; set; }
         public List<SerializedFile> assetsFileList = new List<SerializedFile>();
 
         internal Dictionary<string, int> assetsFileIndexCache = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);

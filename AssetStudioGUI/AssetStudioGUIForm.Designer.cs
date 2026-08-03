@@ -43,6 +43,8 @@ namespace AssetStudioGUI
             this.displayInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripMenuItem();
             this.specifyUnityVersion = new System.Windows.Forms.ToolStripTextBox();
+            this.loadTypeTreeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unloadTypeTreeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showExpOpt = new System.Windows.Forms.ToolStripMenuItem();
             this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAllObjectssplitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -215,6 +217,8 @@ namespace AssetStudioGUI
             this.enablePreview,
             this.displayInfo,
             this.toolStripMenuItem14,
+            this.loadTypeTreeMenuItem,
+            this.unloadTypeTreeMenuItem,
             this.showExpOpt});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(66, 21);
@@ -263,11 +267,27 @@ namespace AssetStudioGUI
             this.toolStripMenuItem14.Text = "Specify Unity version";
             // 
             // specifyUnityVersion
-            // 
+            //
             this.specifyUnityVersion.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
             this.specifyUnityVersion.Name = "specifyUnityVersion";
             this.specifyUnityVersion.Size = new System.Drawing.Size(100, 23);
-            // 
+            //
+            // loadTypeTreeMenuItem
+            //
+            this.loadTypeTreeMenuItem.Name = "loadTypeTreeMenuItem";
+            this.loadTypeTreeMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.loadTypeTreeMenuItem.Text = "Load typetree file…";
+            this.loadTypeTreeMenuItem.ToolTipText = "Load an external typetree data source (e.g. a uniontypetree file) to read bundles whose typetree has been stripped.";
+            this.loadTypeTreeMenuItem.Click += new System.EventHandler(this.loadTypeTreeMenuItem_Click);
+            //
+            // unloadTypeTreeMenuItem
+            //
+            this.unloadTypeTreeMenuItem.Name = "unloadTypeTreeMenuItem";
+            this.unloadTypeTreeMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.unloadTypeTreeMenuItem.Text = "Unload typetree";
+            this.unloadTypeTreeMenuItem.ToolTipText = "Unload the current external typetree data source.";
+            this.unloadTypeTreeMenuItem.Click += new System.EventHandler(this.unloadTypeTreeMenuItem_Click);
+            //
             // showExpOpt
             // 
             this.showExpOpt.Name = "showExpOpt";
@@ -1216,6 +1236,8 @@ namespace AssetStudioGUI
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem13;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem14;
         private System.Windows.Forms.ToolStripTextBox specifyUnityVersion;
+        private System.Windows.Forms.ToolStripMenuItem loadTypeTreeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unloadTypeTreeMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem15;
     }
 }
