@@ -25,6 +25,21 @@ namespace AssetStudio.PInvoke
             }
         }
 
+        /// <summary>
+        /// 从指定目录预加载原生库(供插件从自身所在目录加载其原生依赖)。
+        /// </summary>
+        public static void PreloadDll(string dllName, string dllDir)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Win32.LoadDll(dllDir, dllName);
+            }
+            else
+            {
+                Posix.LoadDll(dllDir, dllName);
+            }
+        }
+
         private static string GetDirectedDllDirectory()
         {
             var localPath = Process.GetCurrentProcess().MainModule.FileName;

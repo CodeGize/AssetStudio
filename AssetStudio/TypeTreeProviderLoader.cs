@@ -23,8 +23,8 @@ namespace AssetStudio
         public static int ProviderCount => _providerTypes.Count;
 
         /// <summary>
-        /// 扫描目录下的所有 *.dll,注册其中的 <see cref="ITypeTreeProvider"/> 实现类。
-        /// 重复调用会先清空已注册的类型。
+        /// 递归扫描目录下(含各插件子目录)的所有 *.dll,注册其中的 <see cref="ITypeTreeProvider"/> 实现类。
+        /// 每个插件通常占一个子目录,与其依赖(含原生库)放在一起。重复调用会先清空已注册的类型。
         /// </summary>
         /// <param name="directory">插件目录(不存在则直接返回 0)。</param>
         /// <returns>本次发现的插件数量。</returns>
@@ -37,18 +37,30 @@ namespace AssetStudio
             HookAssemblyResolve();
             if (!_pluginDirs.Contains(directory))
                 _pluginDirs.Add(directory);
-
-            foreach (var dll in Directory.GetFiles(directory, "*.dll"))
+            // 把每个插件子目录也纳入依赖解析范围(插件的托管依赖通常与它同目录)
+            foreach (var subDir in Directory.GetDirectories(directory, "*", SearchOption.AllDirectories))
             {
+                if (!_pluginDirs.Contains(subDir))
+                    _pluginDirs.Add(subDir);
+            }
+
+            foreach (var dll in Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories))
+            {
+                Assembly assembly;
                 try
                 {
-                    var assembly = Assembly.LoadFrom(dll);
-                    RegisterProviders(assembly);
+                    assembly = Assembly.LoadFrom(dll);
+                }
+                catch (BadImageFormatException)
+                {
+                    continue; // 原生 DLL,跳过
                 }
                 catch (Exception e)
                 {
                     Logger.Warning($"Failed to load typetree plugin {Path.GetFileName(dll)}: {e.Message}");
+                    continue;
                 }
+                RegisterProviders(assembly);
             }
             return _providerTypes.Count;
         }
